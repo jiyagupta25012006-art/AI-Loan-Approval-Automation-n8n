@@ -94,6 +94,7 @@ Characteristics:
 
 Decision:
 
+
 ```text
 APPROVED
 ```
@@ -110,6 +111,7 @@ Characteristics:
 
 Decision:
 
+
 ```text
 UNDER REVIEW
 ```
@@ -125,6 +127,8 @@ Characteristics:
 * Weak Repayment Capacity
 
 Decision:
+
+
 
 ```text
 REJECTED
@@ -154,6 +158,8 @@ The workflow updates:
 * Processing Timestamp
 
 This ensures that all records remain updated in real time.
+
+<img width="2880" height="1704" alt="Google Sheet" src="https://github.com/user-attachments/assets/dce8b7da-bb58-4444-9118-c047a25fe1f3" />
 
 ---
 
@@ -202,7 +208,9 @@ Sent when additional verification is required.
 
 ## Google Sheets Dataset
 
-<img src="./screenshots/dataset.png.png" width="1000"/>
+
+<img width="2880" height="1704" alt="Google Sheet" src="https://github.com/user-attachments/assets/007f4b8a-b02c-4a3d-9cb6-62c3bcb11894" />
+
 
 The dataset contains applicant details used for loan evaluation and decision-making.
 
@@ -210,7 +218,9 @@ The dataset contains applicant details used for loan evaluation and decision-mak
 
 ## n8n Workflow Automation
 
-<img src="./screenshots/workflow.png.png" width="1000"/>
+
+<img width="956" height="409" alt="Screenshot 2026-06-09 165941" src="https://github.com/user-attachments/assets/ac1501e3-22b8-4b92-af52-f6cccb287cd5" />
+
 
 The workflow demonstrates:
 
@@ -224,15 +234,20 @@ The workflow demonstrates:
 
 ## Loan Approval Email
 
-<img src="./screenshots/approved-email.png.png" width="1000"/>
+<img width="610" height="461" alt="Screenshot 2026-06-12 114348" src="https://github.com/user-attachments/assets/3d0abe55-f2ac-4ed0-9c63-359d6242f4d7" />
 
 Automated approval email generated for eligible applicants.
 
 ---
+## Loan Review Email
+
+<img width="611" height="440" alt="Screenshot 2026-06-12 114421" src="https://github.com/user-attachments/assets/354c7afd-2d69-4b50-8522-69cfddb43a7d" />
+
+
 
 ## Loan Rejection Email
 
-<img src="./screenshots/rejected-email.png.png" width="1000"/>
+<img width="515" height="404" alt="Screenshot 2026-06-12 114443" src="https://github.com/user-attachments/assets/29374ea0-94a6-4c3b-ac42-52a1c3962aaa" />
 
 Automated rejection notification generated for high-risk applicants.
 

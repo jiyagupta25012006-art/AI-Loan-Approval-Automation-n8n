@@ -1,0 +1,1457 @@
+{
+  "name": "Loan_Approval_Automation",
+  "nodes": [
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.manualTrigger",
+      "typeVersion": 1,
+      "position": [
+        0,
+        0
+      ],
+      "id": "e6c946e9-1e36-4201-9b54-9b2a366bc37b",
+      "name": "When clicking ‘Execute workflow’"
+    },
+    {
+      "parameters": {
+        "documentId": {
+          "__rl": true,
+          "value": "1JCTrYphA5dgPT95GHX2ZWuJlbpuaSBFPnEFTF51E29o",
+          "mode": "list",
+          "cachedResultName": "Loan_Dataset_Industry_Ready (1)",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1JCTrYphA5dgPT95GHX2ZWuJlbpuaSBFPnEFTF51E29o/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": 1844430342,
+          "mode": "list",
+          "cachedResultName": "Sheet1",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1JCTrYphA5dgPT95GHX2ZWuJlbpuaSBFPnEFTF51E29o/edit#gid=1844430342"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.7,
+      "position": [
+        208,
+        0
+      ],
+      "id": "68de12bf-fc38-4fc1-97c0-96550b902951",
+      "name": "Get row(s) in sheet",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "4ABJgNqp3g16MOUG",
+          "name": "Google Sheets OAuth2 API"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "mode": "runOnceForEachItem",
+        "jsCode": "const credit = Number($json.Credit_Score);\nconst missed = Number($json.Missed_Payments);\nconst dti = Number($json.Debt_to_Income_Ratio);\n\nlet decision = \"\";\nlet risk = \"\";\n\nif (\n  credit >= 750 &&\n  missed === 0 &&\n  dti <= 35\n) {\n  decision = \"Approved\";\n  risk = \"Low\";\n}\nelse if (\n  credit >= 650 &&\n  credit < 750\n) {\n  decision = \"Review\";\n  risk = \"Medium\";\n}\nelse {\n  decision = \"Rejected\";\n  risk = \"High\";\n}\n\nreturn {\n  json: {\n    ...$json,\n    Decision: decision,\n    Risk_Level: risk\n  }\n};"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        416,
+        0
+      ],
+      "id": "d3c5187c-17dc-421c-aa2a-c05d0f84f9c3",
+      "name": "Code in JavaScript"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "loose",
+            "version": 3
+          },
+          "conditions": [
+            {
+              "id": "3202f01c-2af8-447e-bf0a-447db49101c7",
+              "leftValue": "={{ $json.Decision }}",
+              "rightValue": "Approved",
+              "operator": {
+                "type": "string",
+                "operation": "equals",
+                "name": "filter.operator.equals"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "looseTypeValidation": true,
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.3,
+      "position": [
+        624,
+        0
+      ],
+      "id": "f7c034f6-4a57-4f92-aca8-8962d9eb6609",
+      "name": "If"
+    },
+    {
+      "parameters": {
+        "sendTo": "akshita2512.mba25fin@chitkara.edu.in",
+        "subject": "Loan Approved",
+        "message": "=<h2>🎉 Loan Approved</h2>\n\n<p>Your loan application has been approved.</p>\n\n<table border=\"1\" cellpadding=\"8\">\n<tr>\n<td><b>Loan ID</b></td>\n<td>LN031</td>\n</tr>\n\n<tr>\n<td><b>Risk Level</b></td>\n<td style=\"color:green;\">Low</td>\n</tr>\n\n<tr>\n<td><b>Status</b></td>\n<td>Approved</td>\n</tr>\n</table>\n\n<br>\n\n<b>System Decision</b>\n\n<ul>\n<li>Applicant classified as low credit risk</li>\n<li>Eligible for automatic loan approval</li>\n<li>No manual intervention required</li>\n</ul>",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.gmail",
+      "typeVersion": 2.2,
+      "position": [
+        832,
+        -96
+      ],
+      "id": "3b9ec951-8bbc-49ae-b19c-24f256035de9",
+      "name": "Send a message",
+      "webhookId": "b2f006c4-7aa1-49b1-a53b-06fd906580f6",
+      "alwaysOutputData": true,
+      "credentials": {
+        "gmailOAuth2": {
+          "id": "RuCDgo3kZW1jAVFI",
+          "name": "Gmail OAuth2 API"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "update",
+        "documentId": {
+          "__rl": true,
+          "value": "1JCTrYphA5dgPT95GHX2ZWuJlbpuaSBFPnEFTF51E29o",
+          "mode": "list",
+          "cachedResultName": "Loan_Dataset_Industry_Ready (1)",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1JCTrYphA5dgPT95GHX2ZWuJlbpuaSBFPnEFTF51E29o/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": 1844430342,
+          "mode": "list",
+          "cachedResultName": "Sheet1",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1JCTrYphA5dgPT95GHX2ZWuJlbpuaSBFPnEFTF51E29o/edit#gid=1844430342"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "Loan_ID": "={{ $('Code in JavaScript').item.json.Loan_ID }}",
+            "decision": "Applicant classified as low credit risk Strong repayment capacity identified Excellent credit history verified Debt-to-Income ratio within acceptable limits Eligible for automatic loan approval No manual intervention required",
+            "Risk_Level": "Low",
+            "Loan_Status": "Approved"
+          },
+          "matchingColumns": [
+            "Loan_ID"
+          ],
+          "schema": [
+            {
+              "id": "Loan_ID",
+              "displayName": "Loan_ID",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Applicant_Name",
+              "displayName": "Applicant_Name",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "Age",
+              "displayName": "Age",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "City",
+              "displayName": "City",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "Employment_Type",
+              "displayName": "Employment_Type",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "Annual_Salary",
+              "displayName": "Annual_Salary",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "Credit_Score",
+              "displayName": "Credit_Score",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "Existing_Loan",
+              "displayName": "Existing_Loan",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "Loan_Amount",
+              "displayName": "Loan_Amount",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "Loan Purpose",
+              "displayName": "Loan Purpose",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "Loan_Tenure_Months",
+              "displayName": "Loan_Tenure_Months",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "City.1",
+              "displayName": "City.1",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "Credit_History_Years",
+              "displayName": "Credit_History_Years",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "Existing_EMI",
+              "displayName": "Existing_EMI",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "Savings_Balance",
+              "displayName": "Savings_Balance",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "Missed_Payments",
+              "displayName": "Missed_Payments",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "Monthly_Income",
+              "displayName": "Monthly_Income",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "Employment_Years",
+              "displayName": "Employment_Years",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "Debt_to_Income_Ratio",
+              "displayName": "Debt_to_Income_Ratio",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "Loan_to_Income_Ratio",
+              "displayName": "Loan_to_Income_Ratio",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "Residence_Years",
+              "displayName": "Residence_Years",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "Number_of_Active_Loans",
+              "displayName": "Number_of_Active_Loans",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "Credit_Card_Outstanding",
+              "displayName": "Credit_Card_Outstanding",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "Previous_Defaults",
+              "displayName": "Previous_Defaults",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "Bank_Account_Age_Years",
+              "displayName": "Bank_Account_Age_Years",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "Property_Ownership",
+              "displayName": "Property_Ownership",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "Dependents",
+              "displayName": "Dependents",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "Collateral_Value",
+              "displayName": "Collateral_Value",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "FOIR_Percent",
+              "displayName": "FOIR_Percent",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "Loan_Status",
+              "displayName": "Loan_Status",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Risk_Level",
+              "displayName": "Risk_Level",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "decision",
+              "displayName": "decision",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "row_number",
+              "displayName": "row_number",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "number",
+              "canBeUsedToMatch": true,
+              "readOnly": true,
+              "removed": true
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.7,
+      "position": [
+        1040,
+        -96
+      ],
+      "id": "5c8055f1-01de-43ad-8217-7c91e9413e27",
+      "name": "Update row in sheet",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "4ABJgNqp3g16MOUG",
+          "name": "Google Sheets OAuth2 API"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "loose",
+            "version": 3
+          },
+          "conditions": [
+            {
+              "id": "274585ee-8aa3-4264-98fd-2e23a1276e30",
+              "leftValue": "={{ $json.Decision }}",
+              "rightValue": "Review",
+              "operator": {
+                "type": "string",
+                "operation": "equals",
+                "name": "filter.operator.equals"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "looseTypeValidation": true,
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.3,
+      "position": [
+        832,
+        96
+      ],
+      "id": "eef78642-c61a-4998-ad8d-55c5b0bd750b",
+      "name": "If1"
+    },
+    {
+      "parameters": {
+        "operation": "update",
+        "documentId": {
+          "__rl": true,
+          "value": "1JCTrYphA5dgPT95GHX2ZWuJlbpuaSBFPnEFTF51E29o",
+          "mode": "list",
+          "cachedResultName": "Loan_Dataset_Industry_Ready (1)",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1JCTrYphA5dgPT95GHX2ZWuJlbpuaSBFPnEFTF51E29o/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": 1844430342,
+          "mode": "list",
+          "cachedResultName": "Sheet1",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1JCTrYphA5dgPT95GHX2ZWuJlbpuaSBFPnEFTF51E29o/edit#gid=1844430342"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "Risk_Level": "Medium",
+            "decision": "Applicant classified as medium credit risk Additional verification required Credit profile requires manual assessment Income and repayment capacity need further review Escalated to loan officer for approval Pending final decision",
+            "Loan_ID": "={{ $('Code in JavaScript').item.json.Loan_ID }}",
+            "Loan_Status": "Review"
+          },
+          "matchingColumns": [
+            "Loan_ID"
+          ],
+          "schema": [
+            {
+              "id": "Loan_ID",
+              "displayName": "Loan_ID",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Applicant_Name",
+              "displayName": "Applicant_Name",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "Age",
+              "displayName": "Age",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "City",
+              "displayName": "City",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "Employment_Type",
+              "displayName": "Employment_Type",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "Annual_Salary",
+              "displayName": "Annual_Salary",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "Credit_Score",
+              "displayName": "Credit_Score",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "Existing_Loan",
+              "displayName": "Existing_Loan",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "Loan_Amount",
+              "displayName": "Loan_Amount",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "Loan Purpose",
+              "displayName": "Loan Purpose",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "Loan_Tenure_Months",
+              "displayName": "Loan_Tenure_Months",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "City.1",
+              "displayName": "City.1",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "Credit_History_Years",
+              "displayName": "Credit_History_Years",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "Existing_EMI",
+              "displayName": "Existing_EMI",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "Savings_Balance",
+              "displayName": "Savings_Balance",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "Missed_Payments",
+              "displayName": "Missed_Payments",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "Monthly_Income",
+              "displayName": "Monthly_Income",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "Employment_Years",
+              "displayName": "Employment_Years",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "Debt_to_Income_Ratio",
+              "displayName": "Debt_to_Income_Ratio",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "Loan_to_Income_Ratio",
+              "displayName": "Loan_to_Income_Ratio",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "Residence_Years",
+              "displayName": "Residence_Years",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "Number_of_Active_Loans",
+              "displayName": "Number_of_Active_Loans",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "Credit_Card_Outstanding",
+              "displayName": "Credit_Card_Outstanding",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "Previous_Defaults",
+              "displayName": "Previous_Defaults",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "Bank_Account_Age_Years",
+              "displayName": "Bank_Account_Age_Years",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "Property_Ownership",
+              "displayName": "Property_Ownership",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "Dependents",
+              "displayName": "Dependents",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "Collateral_Value",
+              "displayName": "Collateral_Value",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "FOIR_Percent",
+              "displayName": "FOIR_Percent",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "Loan_Status",
+              "displayName": "Loan_Status",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Risk_Level",
+              "displayName": "Risk_Level",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "decision",
+              "displayName": "decision",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "row_number",
+              "displayName": "row_number",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "number",
+              "canBeUsedToMatch": true,
+              "readOnly": true,
+              "removed": true
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.7,
+      "position": [
+        1072,
+        48
+      ],
+      "id": "ce6e757a-78d7-4fcf-b666-0e1eaef1a88b",
+      "name": "Update row in sheet1",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "4ABJgNqp3g16MOUG",
+          "name": "Google Sheets OAuth2 API"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "sendTo": "akshita2512.mba25fin@chitkara.edu.in",
+        "subject": "Loan Application Under Review",
+        "message": "=<h2 style=\"color:orange;\">⚠️ Loan Application Under Review</h2>\n\n<p>\nThe AI-Powered Loan Approval System has flagged your loan application for additional assessment and verification.\n</p>\n\n<hr>\n\n<h3>📊 Loan Assessment Summary</h3>\n\n<table border=\"1\" cellpadding=\"8\" cellspacing=\"0\">\n<tr>\n<td><b>Loan ID</b></td>\n<td>{{ $('Code in JavaScript').item.json.Loan_ID }}</td>\n</tr>\n\n<tr>\n<td><b>Applicant Name</b></td>\n<td>{{ $('Code in JavaScript').item.json.Applicant_Name }}</td>\n</tr>\n\n<tr>\n<td><b>Risk Level</b></td>\n<td style=\"color:orange;\"><b>MEDIUM</b></td>\n</tr>\n\n<tr>\n<td><b>Loan Status</b></td>\n<td>Under Review</td>\n</tr>\n</table>\n\n<br>\n\n<h3>🔍 System Decision</h3>\n\n<ul>\n<li>Applicant classified as medium credit risk</li>\n<li>Additional verification required</li>\n<li>Credit profile requires manual assessment</li>\n<li>Income and repayment capacity need further review</li>\n<li>Application has been escalated to a loan officer</li>\n<li>Final approval decision is pending</li>\n</ul>\n\n<h3>📌 Recommended Action</h3>\n\n<ul>\n<li>Verify income and employment documents</li>\n<li>Review credit history and repayment behaviour</li>\n<li>Assess debt obligations and financial stability</li>\n<li>Complete manual verification process</li>\n</ul>\n\n<p>\nOur loan officer will review your application and contact you if any additional information is required.\n</p>\n\n<p>\nThis notification was generated automatically using the n8n AI-Powered Loan Approval Workflow.\n</p>",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.gmail",
+      "typeVersion": 2.2,
+      "position": [
+        1296,
+        48
+      ],
+      "id": "7eff8ce9-6e61-47ce-91c4-402c409f65dc",
+      "name": "Send a message1",
+      "webhookId": "b20d7ebe-926e-43b6-bfc7-dd2994cda0bc",
+      "credentials": {
+        "gmailOAuth2": {
+          "id": "RuCDgo3kZW1jAVFI",
+          "name": "Gmail OAuth2 API"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "update",
+        "documentId": {
+          "__rl": true,
+          "value": "1JCTrYphA5dgPT95GHX2ZWuJlbpuaSBFPnEFTF51E29o",
+          "mode": "list",
+          "cachedResultName": "Loan_Dataset_Industry_Ready (1)",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1JCTrYphA5dgPT95GHX2ZWuJlbpuaSBFPnEFTF51E29o/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": 1844430342,
+          "mode": "list",
+          "cachedResultName": "Sheet1",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1JCTrYphA5dgPT95GHX2ZWuJlbpuaSBFPnEFTF51E29o/edit#gid=1844430342"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "Risk_Level": "High",
+            "decision": "Applicant classified as high credit risk Credit score below approval threshold Repayment capacity considered insufficient Multiple risk indicators detected Loan application does not meet approval criteria Application rejected automatically",
+            "Loan_ID": "={{ $('Code in JavaScript').item.json.Loan_ID }}",
+            "Loan_Status": "Rejected"
+          },
+          "matchingColumns": [
+            "Loan_ID"
+          ],
+          "schema": [
+            {
+              "id": "Loan_ID",
+              "displayName": "Loan_ID",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Applicant_Name",
+              "displayName": "Applicant_Name",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "Age",
+              "displayName": "Age",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "City",
+              "displayName": "City",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "Employment_Type",
+              "displayName": "Employment_Type",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "Annual_Salary",
+              "displayName": "Annual_Salary",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "Credit_Score",
+              "displayName": "Credit_Score",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "Existing_Loan",
+              "displayName": "Existing_Loan",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "Loan_Amount",
+              "displayName": "Loan_Amount",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "Loan Purpose",
+              "displayName": "Loan Purpose",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "Loan_Tenure_Months",
+              "displayName": "Loan_Tenure_Months",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "City.1",
+              "displayName": "City.1",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "Credit_History_Years",
+              "displayName": "Credit_History_Years",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "Existing_EMI",
+              "displayName": "Existing_EMI",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "Savings_Balance",
+              "displayName": "Savings_Balance",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "Missed_Payments",
+              "displayName": "Missed_Payments",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "Monthly_Income",
+              "displayName": "Monthly_Income",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "Employment_Years",
+              "displayName": "Employment_Years",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "Debt_to_Income_Ratio",
+              "displayName": "Debt_to_Income_Ratio",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "Loan_to_Income_Ratio",
+              "displayName": "Loan_to_Income_Ratio",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "Residence_Years",
+              "displayName": "Residence_Years",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "Number_of_Active_Loans",
+              "displayName": "Number_of_Active_Loans",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "Credit_Card_Outstanding",
+              "displayName": "Credit_Card_Outstanding",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "Previous_Defaults",
+              "displayName": "Previous_Defaults",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "Bank_Account_Age_Years",
+              "displayName": "Bank_Account_Age_Years",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "Property_Ownership",
+              "displayName": "Property_Ownership",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "Dependents",
+              "displayName": "Dependents",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "Collateral_Value",
+              "displayName": "Collateral_Value",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "FOIR_Percent",
+              "displayName": "FOIR_Percent",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "Loan_Status",
+              "displayName": "Loan_Status",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Risk_Level",
+              "displayName": "Risk_Level",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "decision",
+              "displayName": "decision",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "row_number",
+              "displayName": "row_number",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "number",
+              "canBeUsedToMatch": true,
+              "readOnly": true,
+              "removed": true
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.7,
+      "position": [
+        1040,
+        192
+      ],
+      "id": "dea5108d-16fa-43e5-b280-b3192c6902e7",
+      "name": "Update row in sheet2",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "4ABJgNqp3g16MOUG",
+          "name": "Google Sheets OAuth2 API"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "sendTo": "akshita2512.mba25fin@chitkara.edu.in",
+        "subject": "Loan Application Status",
+        "message": "=<h2 style=\"color:red;\">🚨 Loan Application Rejected</h2>\n\n<p>\nThe AI-Powered Loan Approval System detected multiple risk indicators that do not satisfy the bank's approval criteria.\n</p>\n\n<hr>\n\n<h3>📊 Loan Risk Summary</h3>\n\n<table border=\"1\" cellpadding=\"8\" cellspacing=\"0\">\n<tr>\n<td><b>Loan ID</b></td>\n<td>{{ $('Code in JavaScript').item.json.Loan_ID }}</td>\n</tr>\n\n<tr>\n<td><b>Applicant Name</b></td>\n<td>{{ $('Code in JavaScript').item.json.Applicant_Name }}</td>\n</tr>\n\n<tr>\n<td><b>Risk Level</b></td>\n<td style=\"color:red;\"><b>HIGH</b></td>\n</tr>\n\n<tr>\n<td><b>Loan Status</b></td>\n<td>Rejected</td>\n</tr>\n</table>\n\n<br>\n\n<h3>⚠️ System Decision</h3>\n\n<ul>\n<li>Applicant classified as high credit risk</li>\n<li>Credit score below approval threshold</li>\n<li>Repayment capacity considered insufficient</li>\n<li>Multiple financial risk indicators detected</li>\n<li>Loan application does not meet approval criteria</li>\n<li>Application rejected automatically</li>\n</ul>\n\n<h3>📌 Recommended Action</h3>\n\n<ul>\n<li>Improve credit score before reapplying</li>\n<li>Reduce existing debt obligations</li>\n<li>Maintain timely EMI payments</li>\n<li>Increase savings and financial stability</li>\n</ul>\n\n<p>\nThis decision was generated automatically using the n8n AI-Powered Loan Approval Workflow.\n</p>",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.gmail",
+      "typeVersion": 2.2,
+      "position": [
+        1248,
+        192
+      ],
+      "id": "cbbf691e-e8db-4362-83ce-285ff566cdca",
+      "name": "Send a message2",
+      "webhookId": "0b6d24cd-343d-4360-812d-bc05a1aeb96d",
+      "credentials": {
+        "gmailOAuth2": {
+          "id": "RuCDgo3kZW1jAVFI",
+          "name": "Gmail OAuth2 API"
+        }
+      }
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "When clicking ‘Execute workflow’": {
+      "main": [
+        [
+          {
+            "node": "Get row(s) in sheet",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get row(s) in sheet": {
+      "main": [
+        [
+          {
+            "node": "Code in JavaScript",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Code in JavaScript": {
+      "main": [
+        [
+          {
+            "node": "If",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "If": {
+      "main": [
+        [
+          {
+            "node": "Send a message",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "If1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Send a message": {
+      "main": [
+        [
+          {
+            "node": "Update row in sheet",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "If1": {
+      "main": [
+        [
+          {
+            "node": "Update row in sheet1",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Update row in sheet2",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Update row in sheet1": {
+      "main": [
+        [
+          {
+            "node": "Send a message1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Update row in sheet2": {
+      "main": [
+        [
+          {
+            "node": "Send a message2",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1",
+    "binaryMode": "separate"
+  },
+  "versionId": "17ea86b4-cfa4-4d67-b574-489c56cf6ef7",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "b303e34954f41f9cabad86878d61b151f662415fa6d49bcd27085eafe41a01c2"
+  },
+  "id": "3NqIZZyutDMAjwz8",
+  "tags": []
+}

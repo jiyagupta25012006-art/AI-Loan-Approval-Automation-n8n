@@ -159,7 +159,7 @@ The workflow updates:
 
 This ensures that all records remain updated in real time.
 
-<img width="2880" height="1704" alt="Google Sheet" src="https://github.com/user-attachments/assets/dce8b7da-bb58-4444-9118-c047a25fe1f3" />
+
 
 ---
 
@@ -209,7 +209,8 @@ Sent when additional verification is required.
 ## Google Sheets Dataset
 
 
-<img width="2880" height="1704" alt="Google Sheet" src="https://github.com/user-attachments/assets/007f4b8a-b02c-4a3d-9cb6-62c3bcb11894" />
+<img width="2880" height="1704" alt="Google Sheet" src="https://github.com/user-attachments/assets/33891ddb-8267-491c-be64-e4a819b1be6a" />
+
 
 
 The dataset contains applicant details used for loan evaluation and decision-making.
